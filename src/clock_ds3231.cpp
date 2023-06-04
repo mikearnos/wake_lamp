@@ -67,17 +67,15 @@ void clockHandleEvents()
     isrTriggered = 0;
 
     if (ds_clock.checkIfAlarm(1)) { // *months*, clear alarm flag in the DS3231
-        Serial.printf("Alarm 1 went off at %s\n", timeDateString());
+        Serial.printf("Alarm 1 went off at %s\n", clockTimeDateString());
 
         clockNTPUpdate(1); // force an NTP update
     }
     if (ds_clock.checkIfAlarm(2)) { // *minutes*, clear alarm flag in the DS3231
-        Serial.printf("Alarm 2 went off at %s\n", timeDateString());
-
-        clockHandleEventMinutes();
+        extern void handleEventMinutes();
 
         if (clockDelayUpdate > 0) // only allow an NTP update once per 2 hours
-            clockDelayUpdate--;
+            clockDelayUpdate--; // counts down from 120 every minute
     }
 }
 
@@ -107,7 +105,7 @@ void clockNTPUpdate(int16_t force)
 
     if (loop) { // if UDP didn't timeout
         clockSetEpoch(time); // also resets the Oscillator Stop Flag
-        Serial.printf("Time updated: %s\n", timeDateString());
+        Serial.printf("Time updated: %s\n", clockTimeDateString());
 
         ds_error &= ~DS3231_LOST_POWER; // clear the flag
         clockDelayUpdate = 120; // delay next NTP update for 120 minutes
@@ -132,7 +130,7 @@ void clockSetEpoch(time_t epoch)
     ds_clock.setYear(tmnow.tm_year - 100); /* year */
 }
 
-char* timeDateString(void)
+char* clockTimeDateString(void)
 {
     static char buffer[25];
     bool century = false;

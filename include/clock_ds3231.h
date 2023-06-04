@@ -23,4 +23,4 @@ void clockSetAlarms(void);
 void clockHandleEventMinutes(void);
 void clockNTPUpdate(int16_t);
 void clockSetEpoch(time_t);
-char * timeDateString(void);
+char * clockTimeDateString(void);

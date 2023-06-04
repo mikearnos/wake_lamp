@@ -30,8 +30,7 @@ void setup()
 
     clockNTPUpdate(0); // update DS3231 if power was lost
 
-    Serial.printf("First trigger at %s\n", timeDateString());
-    clockHandleEventMinutes();
+    Serial.printf("First run at %s\n", clockTimeDateString());
 
     clockSetAlarms(); // enable alarms after we have the correct time
 }
@@ -41,12 +40,7 @@ void loop()
     clockHandleEvents(); // check events once a minute and once a month
 }
 
-void clockHandleEventMinutes(void)
+void handleEventMinutes(void)
 {
-    /*if (webSocket.connectedClients() > 0) {
-        char* jsonString;
-        jsonString = makeJsonString();
-        webSocket.broadcastTXT(jsonString);
-        Serial.printf("WS*: Sent current status: %s\n", jsonString);
-    }*/
+    Serial.printf("Alarm 2 went off at %s\n", clockTimeDateString());
 }
