@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include <Wire.h>
 #include <DS3231.h> // by Andrew Wickert
+//#include <time.h>
 
 #include "clock_ds3231.h"
 #include "time_ntp.h"
@@ -10,6 +11,7 @@ extern void connectWifi(void); // in main.cpp
 extern void disconnectWifi(void); // in main.cpp
 
 DS3231 ds_clock;
+RTClib myRTC; // get now()
 
 uint8_t ds_error = 0;
 int16_t clockDelayUpdate = 0; // prevents multiple NTP requests in a short time
@@ -124,6 +126,14 @@ void clockNTPUpdate(int16_t force)
         Serial.println("ERROR: Couldn't get time from NTP server, will retry.");
         clockUpdateTime = 1;
     }
+}
+
+void clockGetEpoch(void)
+{
+    DateTime now = myRTC.now();
+
+    Serial.print("Seconds since midnight 1/1/1970 GMT = ");
+    Serial.print(now.unixtime());
 }
 
 void clockSetEpoch(time_t epoch)

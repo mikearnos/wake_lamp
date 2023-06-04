@@ -11,6 +11,7 @@ const char* ssid = STASSID;
 const char* password = STAPSK;
 
 extern bool clockUpdateTime;
+extern void clockGetEpoch();
 
 void setup()
 {
@@ -27,6 +28,8 @@ void setup()
     Serial.printf("First run at %s\n", clockTimeDateString());
 
     clockSetAlarms(); // enable alarms after we have the correct time
+
+    clockGetEpoch();
 }
 
 void loop()
