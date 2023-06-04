@@ -30,7 +30,8 @@ void startUDP()
 
     // Resolve the given hostname to an IP address
     if (!WiFi.hostByName(NTPServerName, timeServerIP)) {
-        Serial.println("DNS lookup failed. Rebooting.");
+        Serial.println("DNS lookup failed.");
+        return;
     }
     Serial.print("Time server IP:\t");
     Serial.println(timeServerIP);
