@@ -5,10 +5,15 @@
 #include "clock_ds3231.h"
 #include "time_ntp.h"
 
+extern void handleEventMinutes(void); // in main.cpp
+extern void connectWifi(void); // in main.cpp
+extern void disconnectWifi(void); // in main.cpp
+
 DS3231 ds_clock;
 
 uint8_t ds_error = 0;
-int16_t clockDelayUpdate = 0;
+int16_t clockDelayUpdate = 0; // prevents multiple NTP requests in a short time
+bool clockUpdateTime = 0;
 
 volatile bool isrTriggered = 0;
 
@@ -68,11 +73,10 @@ void clockHandleEvents()
 
     if (ds_clock.checkIfAlarm(1)) { // *months*, clear alarm flag in the DS3231
         Serial.printf("Alarm 1 went off at %s\n", clockTimeDateString());
-
-        clockNTPUpdate(1); // force an NTP update
+        clockUpdateTime = 1;
     }
     if (ds_clock.checkIfAlarm(2)) { // *minutes*, clear alarm flag in the DS3231
-        extern void handleEventMinutes();
+        handleEventMinutes();
 
         if (clockDelayUpdate > 0) // only allow an NTP update once per 2 hours
             clockDelayUpdate--; // counts down from 120 every minute
@@ -81,7 +85,11 @@ void clockHandleEvents()
 
 void clockNTPUpdate(int16_t force)
 {
-    if (ds_error + force == 0 || clockDelayUpdate > 0) {
+    if (clockDelayUpdate > 0) {
+        Serial.printf("INFO: NTP request sooner than %d hours\n", NTP_DELAY_HOURS);
+        return;
+    }
+    if (!ds_error && !force) {
         return;
     }
     if (ds_error & DS3231_LOST_POWER) {
@@ -90,6 +98,7 @@ void clockNTPUpdate(int16_t force)
     }
 
     Serial.println("Updating time via NTP.");
+    connectWifi();
     startUDP();
 
     uint32_t time = 0;
@@ -102,15 +111,18 @@ void clockNTPUpdate(int16_t force)
     }
     Serial.println();
     stopUDP();
+    disconnectWifi();
 
     if (loop) { // if UDP didn't timeout
         clockSetEpoch(time); // also resets the Oscillator Stop Flag
         Serial.printf("Time updated: %s\n", clockTimeDateString());
 
         ds_error &= ~DS3231_LOST_POWER; // clear the flag
-        clockDelayUpdate = 120; // delay next NTP update for 120 minutes
+        clockDelayUpdate = NTP_DELAY_MINS; // delay next NTP update
+        clockUpdateTime = 0;
     } else {
-        Serial.println("ERROR: Couldn't get time from NTP server");
+        Serial.println("ERROR: Couldn't get time from NTP server, will retry.");
+        clockUpdateTime = 1;
     }
 }
 
