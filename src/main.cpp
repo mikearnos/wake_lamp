@@ -10,6 +10,8 @@
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
+extern bool clockUpdateTime;
+
 void setup()
 {
     Serial.begin(115200);
@@ -19,14 +21,6 @@ void setup()
 
     outletHardwareSetup(); // calls Wire.begin(), check for and setup i2c expander
     clockCheckHardware(); // check for clock hardware
-
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        Serial.print(".");
-        delay(500);
-    }
-    Serial.printf("\nConnected to %s", ssid);
-    Serial.printf(" - IP address: %s\n", WiFi.localIP().toString().c_str());
 
     clockNTPUpdate(0); // update DS3231 if power was lost
 
@@ -43,4 +37,31 @@ void loop()
 void handleEventMinutes(void)
 {
     Serial.printf("Alarm 2 went off at %s\n", clockTimeDateString());
+
+    if (clockUpdateTime) {
+        clockNTPUpdate(1); // force an NTP update
+    }
+}
+
+void connectWifi(void)
+{
+    WiFi.forceSleepWake();
+    delay(1);
+    WiFi.mode(WIFI_STA);
+
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        Serial.print(".");
+        delay(500);
+    }
+    Serial.printf("\nConnected to %s", ssid);
+    Serial.printf(" - IP address: %s\n", WiFi.localIP().toString().c_str());
+}
+
+void disconnectWifi(void)
+{
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_OFF);
+    WiFi.forceSleepBegin();
+    delay(1);
 }
