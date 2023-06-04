@@ -15,6 +15,9 @@
 #define ALARM1_BITS 0b0000     // "Alarm when date, hours, minutes, and seconds match"
 #define ALARM2_BITS 0b111 << 4 // "Alarm once per minute (00 seconds of every minute)"
 
+#define NTP_DELAY_MINS 120
+#define NTP_DELAY_HOURS ( NTP_DELAY_MINS / 60 )
+
 void ds3231_interrupt(void);
 void clockHandleEvents(void);
 
