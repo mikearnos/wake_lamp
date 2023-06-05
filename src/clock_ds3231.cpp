@@ -66,7 +66,7 @@ void clockSetAlarms()
     ds_clock.turnOnAlarm(2);
 }
 
-void clockHandleEvents()
+void clockCheckEvents()
 {
     if (!isrTriggered || ds_error & DS3231_NO_DETECT)
         return;
@@ -74,7 +74,7 @@ void clockHandleEvents()
     isrTriggered = 0;
 
     if (ds_clock.checkIfAlarm(1)) { // *months*, clear alarm flag in the DS3231
-        Serial.printf("Alarm 1 went off at %s\n", clockTimeDateString());
+        Serial.printf("Alarm 1 went off at %s\n", clockGetTimeDateString(0));
         clockUpdateTime = 1;
     }
     if (ds_clock.checkIfAlarm(2)) { // *minutes*, clear alarm flag in the DS3231
@@ -117,7 +117,7 @@ void clockNTPUpdate(int16_t force)
 
     if (loop) { // if UDP didn't timeout
         clockSetEpoch(time); // also resets the Oscillator Stop Flag
-        Serial.printf("Time updated: %s\n", clockTimeDateString());
+        Serial.printf("Time updated: %s\n", clockGetTimeDateString(0));
 
         ds_error &= ~DS3231_LOST_POWER; // clear the flag
         clockDelayUpdate = NTP_DELAY_MINS; // delay next NTP update
@@ -152,15 +152,36 @@ void clockSetEpoch(time_t epoch)
     ds_clock.setYear(tmnow.tm_year - 100); /* year */
 }
 
-char* clockTimeDateString(void)
+char* clockGetTimeDateString(time_t UNIXTime)
 {
     static char buffer[25];
-    bool century = false;
-    bool h12Flag;
-    bool pmFlag;
 
-    sprintf(buffer, "%d/%d/%d %d:%02d:%02d", ds_clock.getMonth(century), ds_clock.getDate(),
-        ds_clock.getYear(), ds_clock.getHour(h12Flag, pmFlag), ds_clock.getMinute(), ds_clock.getSecond());
+    if (!UNIXTime) {
+        UNIXTime = clockGetCurrentTime();
+    }
+
+    Serial.print("Seconds since midnight 1/1/1970 EST = ");
+    Serial.println(UNIXTime);
+
+    struct tm tmnow;
+    gmtime_r(&UNIXTime, &tmnow);
+
+    sprintf(buffer, "%d/%d/%d %d:%02d:%02d", tmnow.tm_mon, tmnow.tm_mday,
+        tmnow.tm_year - 100, tmnow.tm_hour, tmnow.tm_min, tmnow.tm_sec);
 
     return buffer;
+}
+
+time_t clockGetCurrentTime()
+{
+    DateTime now = myRTC.now();
+    time_t UNIXTime = now.unixtime();
+
+    UNIXTime += TZ_OFFSET;
+
+    if (isDST(UNIXTime)) {
+        UNIXTime += 3600; // add 1 hour for DST
+    }
+
+    return UNIXTime;
 }
