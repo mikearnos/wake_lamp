@@ -102,12 +102,6 @@ uint32_t getTime()
     // subtract seventy years:
     uint32_t UNIXTime = NTPTime - seventyYears;
 
-    if (isDST(UNIXTime)) {
-        UNIXTime += 3600; // add 1 hour for DST
-    }
-
-    UNIXTime -= TZ_OFFSET;
-
     return UNIXTime;
 }
 
