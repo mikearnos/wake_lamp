@@ -27,4 +27,4 @@ void clockHandleEventMinutes(void);
 void clockNTPUpdate(int16_t);
 void clockSetEpoch(time_t);
 char * clockGetTimeDateString(time_t);
-time_t clockGetCurrentTime(void);
+time_t clockGetLocalTime(void);
