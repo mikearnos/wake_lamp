@@ -149,22 +149,19 @@ char* clockGetTimeDateString(time_t UNIXTime)
     static char buffer[25];
 
     if (!UNIXTime) {
-        UNIXTime = clockGetCurrentTime();
+        UNIXTime = clockGetLocalTime();
     }
-
-    Serial.print("Seconds since midnight 1/1/1970 EST = ");
-    Serial.println(UNIXTime);
 
     struct tm tmnow;
     gmtime_r(&UNIXTime, &tmnow);
 
-    sprintf(buffer, "%d/%d/%d %d:%02d:%02d", tmnow.tm_mon, tmnow.tm_mday,
+    sprintf(buffer, "%d/%d/%d %d:%02d:%02d", tmnow.tm_mon + 1, tmnow.tm_mday,
         tmnow.tm_year - 100, tmnow.tm_hour, tmnow.tm_min, tmnow.tm_sec);
 
     return buffer;
 }
 
-time_t clockGetCurrentTime()
+time_t clockGetLocalTime()
 {
     DateTime now = myRTC.now();
     time_t UNIXTime = now.unixtime();
