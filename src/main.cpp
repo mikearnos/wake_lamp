@@ -11,7 +11,6 @@ const char* ssid = STASSID;
 const char* password = STAPSK;
 
 extern bool clockUpdateTime;
-extern void clockGetEpoch();
 
 void setup()
 {
@@ -38,7 +37,6 @@ void loop()
 void handleEventMinutes(void)
 {
     Serial.printf("Alarm 2 went off at %s\n", clockGetTimeDateString(0));
-    //clockGetTimeDateString();
 
     if (clockUpdateTime) {
         clockNTPUpdate(1); // force an NTP update
