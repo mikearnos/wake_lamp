@@ -36,7 +36,8 @@ void loop()
 
 void handleEventMinutes(void)
 {
-    Serial.printf("Alarm 2 went off at %s\n", clockGetTimeDateString(0));
+    time_t localTime = clockGetLocalTime();
+    Serial.printf("Alarm 2 went off at %s\n", clockGetTimeDateString(localTime));
 
     if (clockUpdateTime) {
         clockNTPUpdate(1); // force an NTP update
