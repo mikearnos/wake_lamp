@@ -16,7 +16,6 @@ void stopUDP(void);
 void sendNTPpacket(IPAddress&);
 uint32_t getTime(void);
 void udpLoop(void);
-//int isDST(void);
 
 inline int getSeconds(uint32_t);
 inline int getMinutes(uint32_t);
