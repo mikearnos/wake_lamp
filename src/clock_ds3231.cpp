@@ -128,14 +128,6 @@ void clockNTPUpdate(int16_t force)
     }
 }
 
-void clockGetEpoch(void)
-{
-    DateTime now = myRTC.now();
-
-    Serial.print("Seconds since midnight 1/1/1970 GMT = ");
-    Serial.print(now.unixtime());
-}
-
 void clockSetEpoch(time_t epoch)
 {
     // setEpoch function gives the epoch as parameter and feeds the RTC
