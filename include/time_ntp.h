@@ -2,7 +2,7 @@
 
 //Time Zone Selection
 //const int TZ_OFFSET = 4*3600;  //AST UTC-4
-const int TZ_OFFSET = 5*3600;  //EST UTC-5
+const int TZ_OFFSET = -(5*3600);  //EST UTC-5
 //const int TZ_OFFSET = 6*3600;  //CST UTC-6
 //const int TZ_OFFSET = 7*3600;  //MST UTC-7
 //const int TZ_OFFSET = 8*3600;  //PST UTC-8
