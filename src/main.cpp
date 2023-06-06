@@ -12,6 +12,9 @@ const char* password = STAPSK;
 
 extern bool clockUpdateTime;
 
+extern void oledSetup();
+extern void oledGo(char*);
+
 void setup()
 {
     Serial.begin(115200);
@@ -24,20 +27,24 @@ void setup()
 
     clockNTPUpdate(0); // update DS3231 if power was lost
 
+    oledSetup();
+
     Serial.printf("First run at %s\n", clockGetTimeDateString(0));
+    oledGo(clockGetTimeDateString(0));
 
     clockSetAlarms(); // enable alarms after we have the correct time
 }
 
 void loop()
 {
-    clockCheckEvents(); // check events once a minute and once a month
+    clockCheckEvents(); // launch events once a minute and once a month
 }
 
 void handleEventMinutes(void)
 {
     time_t localTime = clockGetLocalTime();
     Serial.printf("Alarm 2 went off at %s\n", clockGetTimeDateString(localTime));
+    oledGo(clockGetTimeDateString(0));
 
     if (clockUpdateTime) {
         clockNTPUpdate(1); // force an NTP update
