@@ -4,6 +4,13 @@
 PCF8574 relayBoard(PCF8574_ADDR);
 uint8_t outletStatus[OUTLET_NUM] = { 0 };
 
+volatile bool pcfIsrTriggered = 0;
+
+IRAM_ATTR void pcf8574_interrupt()
+{
+    pcfIsrTriggered = 1;
+}
+
 void outletHardwareSetup()
 {
     // Set PCF8574 pinMode to OUTPUT
@@ -22,6 +29,10 @@ void outletHardwareSetup()
         Serial.println("PCF8574 IO expander not found");
         return;
     }
+
+    // set esp8266 pin interupt to detect DS3231 alarms
+    pinMode(PCF8574_INT_PIN, INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(PCF8574_INT_PIN), pcf8574_interrupt, FALLING);
 
     for (int i = 0; i < OUTLET_NUM; i++) {
         outletOn(i);
