@@ -87,11 +87,14 @@ void clockCheckEvents()
 
 void clockNTPUpdate(int16_t force)
 {
+    if (ds_error & DS3231_NO_DETECT) {
+        return;
+    }
     if (clockDelayUpdate > 0) {
         Serial.printf("INFO: NTP request sooner than %d hours\n", NTP_DELAY_HOURS);
         return;
     }
-    if (!ds_error && !force) {
+    if (!ds_error && !force) { // hardware is OK and not forced
         return;
     }
     if (ds_error & DS3231_LOST_POWER) {
