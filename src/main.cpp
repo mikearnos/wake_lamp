@@ -16,7 +16,7 @@ int sensorValue = 0; // value read from the pot
 extern bool clockUpdateTime;
 
 extern void oledSetup();
-extern void oledGo(char*);
+extern void oledGo(char*, int, int);
 int bufferADC(int);
 int movingWindowADC(int);
 
@@ -35,7 +35,7 @@ void setup()
     oledSetup();
 
     Serial.printf("First run at %s\n", clockGetTimeDateString(0));
-    oledGo(clockGetTimeDateString(0));
+    //oledGo(clockGetTimeDateString(0));
 
     clockSetAlarms(); // enable alarms after we have the correct time
 }
@@ -45,10 +45,11 @@ void loop()
     char bufferStr[7]; //the ASCII of the integer will be stored in this char array
     const char* hourStrings[] = { "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
     const char* minStrings[] = { "00", "30" };
-    const char* noonStrings[] = { "AM", "PM" };
+    //const char* noonStrings[] = { "AM", "PM" };
     //sensorValue = bufferADC(8);
     sensorValue = movingWindowADC(4);
     sensorValue = constrain(sensorValue, 20, 1024);
+    int horizontalValue = map(sensorValue, 20, 1024, 0, 127);
     sensorValue = map(sensorValue, 20, 1024, 0, 47);
 
     //itoa(sensorValue, bufferStr, 10); //(integer, yourBuffer, base)
@@ -58,13 +59,13 @@ void loop()
     strcpy(bufferStr, hourStrings[sensorValue / 2]);
     strcat(bufferStr, ":");
     strcat(bufferStr, minStrings[sensorValue % 2]);
-    strcat(bufferStr, " ");
-    strcat(bufferStr, noonStrings[(sensorValue / 24) % 2]);
+    //strcat(bufferStr, " ");
+    //strcat(bufferStr, noonStrings[(sensorValue / 24) % 2]);
 
     //delay(20);
-    if (millis() - oledRefresh > 20) {
+    if (millis() - oledRefresh > 30) {
         oledRefresh = millis();
-        oledGo(bufferStr);
+        oledGo(bufferStr, (sensorValue / 24) % 2, horizontalValue);
     }
 
     clockCheckEvents(); // launch events once a minute and once a month
@@ -112,7 +113,7 @@ void handleEventMinutes(void)
 {
     time_t localTime = clockGetLocalTime();
     Serial.printf("Alarm 2 went off at %s\n", clockGetTimeDateString(localTime));
-    oledGo(clockGetTimeDateString(0));
+    //oledGo(clockGetTimeDateString(0));
 
     if (clockUpdateTime) {
         clockNTPUpdate(1); // force an NTP update
