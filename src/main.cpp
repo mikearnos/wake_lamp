@@ -49,7 +49,7 @@ void loop()
     //sensorValue = bufferADC(8);
     sensorValue = movingWindowADC(4);
     sensorValue = constrain(sensorValue, 20, 1024);
-    int horizontalValue = map(sensorValue, 20, 1024, 0, 127);
+    int horizontalValue = map(sensorValue, 20, 1024, 0, 511);
     sensorValue = map(sensorValue, 20, 1024, 0, 47);
 
     //itoa(sensorValue, bufferStr, 10); //(integer, yourBuffer, base)
