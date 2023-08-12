@@ -40,23 +40,24 @@ void loop()
 {
     int sensorValue; // value read from the pot
 
-    char bufferStr[6]; //the ASCII of the time will be stored in this char array
+    char bufferStr[6]; //the ASCII of the time will be stored in this char array "12:00\n"
     const char* hourStrings[] = { "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
     const char* minStrings[] = { "00", "30" };
-    //sensorValue = bufferADC(8);
-    sensorValue = movingWindowADC(4);
-    sensorValue = constrain(sensorValue, DEADZONE_LOW, DEADZONE_HIGH); // trim the dead zone
-    int horizontalValue = map(sensorValue, DEADZONE_LOW, DEADZONE_HIGH, 0, 511);
-    sensorValue = map(sensorValue, DEADZONE_LOW, DEADZONE_HIGH, 0, 47); // amount of 30 minute slices in the day
-
-    //itoa(sensorValue, bufferStr, 10); //(integer, yourBuffer, base)
-
-    strcpy(bufferStr, hourStrings[sensorValue / 2]);
-    strcat(bufferStr, ":");
-    strcat(bufferStr, minStrings[sensorValue % 2]);
 
     static uint32_t oledRefresh = millis();
-    if (millis() - oledRefresh > 30) {
+    if (millis() - oledRefresh > 10) {
+        //sensorValue = bufferADC(8);
+        sensorValue = movingWindowADC(4);
+        sensorValue = constrain(sensorValue, DEADZONE_LOW, DEADZONE_HIGH); // trim the dead zone
+        int horizontalValue = map(sensorValue, DEADZONE_LOW, DEADZONE_HIGH, 0, 511);
+        sensorValue = map(sensorValue, DEADZONE_LOW, DEADZONE_HIGH, 0, 47); // amount of 30 minute slices in the day
+
+        //itoa(sensorValue, bufferStr, 10); //(integer, yourBuffer, base)
+
+        strcpy(bufferStr, hourStrings[sensorValue / 2]);
+        strcat(bufferStr, ":");
+        strcat(bufferStr, minStrings[sensorValue % 2]);
+
         oledRefresh = millis();
         oledGo(bufferStr, (sensorValue / 24) % 2, horizontalValue);
     }
