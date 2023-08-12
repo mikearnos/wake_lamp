@@ -12,7 +12,7 @@ void oledSetup(void)
 
 void oledGo(char* string, int value, int horizontal)
 {
-    int strWidth;
+    //int strWidth;
     u8g2.clearBuffer();
     //u8g2.drawFrame(3,7,25,15);
     u8g2.setFont(u8g2_font_ncenB24_tr);
