@@ -11,14 +11,35 @@ IRAM_ATTR void pcf8574_interrupt()
     pcfIsrTriggered = 1;
 }
 
+void outletLoop()
+{
+    static int count = 0;
+    static uint32_t debounceDelay;
+
+    if (pcfIsrTriggered) {
+        pcfIsrTriggered = 0;
+
+        if (millis() - debounceDelay > 10) {
+            debounceDelay = millis();
+            uint8_t input = relayBoard.digitalRead(INPUT_START, 0);
+            if (!input) {
+                Serial.printf("input pressed %d\n", count++);
+            }
+        }
+    }
+}
+
 void outletHardwareSetup()
 {
+    pcfIsrTriggered = 0;
+
     // Set PCF8574 pinMode to OUTPUT
     // PCF8574 outputs default to HIGH (relays off)
     relayBoard.pinMode(OUTLET_START, OUTPUT);
     relayBoard.pinMode(OUTLET_START + 1, OUTPUT);
     relayBoard.pinMode(OUTLET_START + 2, OUTPUT);
     relayBoard.pinMode(OUTLET_START + 3, OUTPUT);
+    relayBoard.pinMode(INPUT_START, INPUT);
 
     relayBoard.begin(); // *** calls Wire.begin() ***
 
@@ -30,7 +51,7 @@ void outletHardwareSetup()
         return;
     }
 
-    // set esp8266 pin interupt to detect DS3231 alarms
+    // set esp8266 pin interupt
     pinMode(PCF8574_INT_PIN, INPUT_PULLUP);
     attachInterrupt(digitalPinToInterrupt(PCF8574_INT_PIN), pcf8574_interrupt, FALLING);
 
