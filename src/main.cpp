@@ -49,7 +49,9 @@ void loop()
         oledGo(sensorValue);
     }
 
-    clockCheckEvents(); // launch events once a minute and once a month
+    outletLoop(); // check for input interrupt
+
+    clockLoop(); // launch events once a minute and once a month
 }
 
 void handleEventMinutes(void)
