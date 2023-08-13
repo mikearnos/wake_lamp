@@ -19,7 +19,7 @@
 #define NTP_DELAY_HOURS ( NTP_DELAY_MINS / 60 )
 
 void ds3231_interrupt(void);
-void clockCheckEvents(void);
+void clockLoop(void);
 
 void clockCheckHardware(void);
 void clockSetAlarms(void);

@@ -66,7 +66,7 @@ void clockSetAlarms()
     ds_clock.turnOnAlarm(2);
 }
 
-void clockCheckEvents()
+void clockLoop()
 {
     if (!isrTriggered || ds_error & DS3231_NO_DETECT)
         return;
