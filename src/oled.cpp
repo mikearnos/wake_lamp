@@ -12,7 +12,7 @@ void oledSetup(void)
     u8g2.setFont(u8g2_font_ncenB24_tr);
 }
 
-void oledGo(int sensorValue)
+void oledGo(int sensorValue, bool systemEnabled)
 {
     char bufferStr[6]; //the ASCII of the time will be stored in this char array "12:00\n"
     const char* hourStrings[] = { "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };

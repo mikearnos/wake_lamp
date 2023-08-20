@@ -39,6 +39,7 @@ void outletHardwareSetup()
     relayBoard.pinMode(OUTLET_START + 1, OUTPUT);
     relayBoard.pinMode(OUTLET_START + 2, OUTPUT);
     relayBoard.pinMode(OUTLET_START + 3, OUTPUT);
+
     relayBoard.pinMode(INPUT_START, INPUT);
 
     relayBoard.begin(); // *** calls Wire.begin() ***
