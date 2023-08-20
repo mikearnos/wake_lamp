@@ -11,10 +11,15 @@
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
+bool systemEnabled = 1;
+
 extern bool clockUpdateTime;
 
+extern void dfSetup(void);
+extern uint16_t dfPlay(int);
+
 extern void oledSetup();
-extern void oledGo(int);
+extern void oledGo(int, bool);
 
 void setup()
 {
@@ -22,6 +27,9 @@ void setup()
 
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH); // OFF
+
+    dfSetup();
+    dfPlay(1); // play first mp3 as startup sound
 
     outletHardwareSetup(); // calls Wire.begin(), check for and setup i2c expander
     clockCheckHardware(); // check for clock hardware
@@ -46,7 +54,7 @@ void loop()
         int sensorValue = movingWindowADC(4);
         sensorValue = constrain(sensorValue, DEADZONE_LOW, DEADZONE_HIGH); // trim the dead zone
 
-        oledGo(sensorValue);
+        oledGo(sensorValue, systemEnabled);
     }
 
     outletLoop(); // check for input interrupt
