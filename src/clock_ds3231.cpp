@@ -5,6 +5,7 @@
 
 #include "clock_ds3231.h"
 #include "time_ntp.h"
+#include "oled.h"
 
 extern void handleEventMinutes(void); // in main.cpp
 extern void connectWifi(void); // in main.cpp
@@ -31,6 +32,7 @@ int clockInitHW()
 
     if (wire_error != 0) {
         Serial.println("DS3231 not found");
+        oledBootPrint("Clock FAIL!");
         ds_error = DS3231_NO_DETECT;
         return 1;
     }
@@ -53,6 +55,9 @@ int clockInitHW()
     if (wire_error != 0) {
         Serial.println("AT24C32_ADDR EEPROM not found");
     }
+
+    oledBootPrint("Clock OK!");
+    delay(1000);
 
     return 0;
 }

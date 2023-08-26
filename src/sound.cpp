@@ -1,5 +1,6 @@
 #include <DFRobot_DF1201S.h>
 #include <SoftwareSerial.h>
+#include "oled.h"
 
 #define DFRX D4
 #define DFTX D7
@@ -11,18 +12,17 @@ DFRobot_DF1201S DF1201S;
 
 int totalFiles;
 
-void soundInitHW(void)
+int soundInitHW(void)
 {
     DF1201SSerial.begin(115200);
 
     for (int i = 5; !DF1201S.begin(DF1201SSerial) && i; i--) {
         if (i == 1) {
-            Serial.println("DF1201S init failed, please check the wire connection!");
-            for (int i = 0; i < 3; i++) {
-                delay(200);
-            }
-            return;
+            Serial.println("DF1201S init failed, check the wire connection!");
+            oledBootPrint("Sound FAIL!");
+            return 1;
         }
+        delay(200);
     }
 
     // need to power cycle module after these are changed
@@ -43,6 +43,11 @@ void soundInitHW(void)
     totalFiles = DF1201S.getTotalFile();
     Serial.print("TotalFiles: ");
     Serial.println(totalFiles);
+
+    oledBootPrint("Sound OK!");
+    delay(1000);
+
+    return 0;
 }
 
 uint16_t soundPlay(int fileID)

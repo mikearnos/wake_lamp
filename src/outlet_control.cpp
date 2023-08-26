@@ -1,10 +1,13 @@
 #include "PCF8574.h" // by Renzo Mischianti
 #include "outlet_control.h"
+#include "oled.h"
 
 PCF8574 relayBoard(PCF8574_ADDR);
 uint8_t outletStatus[OUTLET_NUM] = { 0 };
 
 volatile bool pcfIsrTriggered = 0;
+
+extern bool systemEnabled;
 
 IRAM_ATTR void pcf8574_interrupt()
 {
@@ -24,6 +27,7 @@ void outletLoop()
             uint8_t input = relayBoard.digitalRead(INPUT_START, 0);
             if (!input) {
                 Serial.printf("input pressed %d\n", count++);
+                systemEnabled ^= 1;
             }
         }
     }
@@ -49,6 +53,7 @@ int outletInitHW()
 
     if (error != 0) {
         Serial.println("PCF8574 IO expander not found");
+        oledBootPrint("I/O exp FAIL!");
         return 1;
     }
 
@@ -61,6 +66,9 @@ int outletInitHW()
         delay(200);
         outletOff(i);
     }
+
+    oledBootPrint("I/O exp OK!");
+    delay(1000);
 
     return 0;
 }
