@@ -21,7 +21,7 @@
 void ds3231_interrupt(void);
 void clockLoop(void);
 
-void clockCheckHardware(void);
+int clockInitHW(void);
 void clockSetAlarms(void);
 void clockHandleEventMinutes(void);
 void clockNTPUpdate(int16_t);

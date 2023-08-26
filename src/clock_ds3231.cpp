@@ -24,7 +24,7 @@ IRAM_ATTR void ds3231_interrupt()
     isrTriggered = 1;
 }
 
-void clockCheckHardware()
+int clockInitHW()
 {
     Wire.beginTransmission(DS3231_ADDR);
     uint8_t wire_error = Wire.endTransmission();
@@ -32,7 +32,7 @@ void clockCheckHardware()
     if (wire_error != 0) {
         Serial.println("DS3231 not found");
         ds_error = DS3231_NO_DETECT;
-        return;
+        return 1;
     }
 
     if (!ds_clock.oscillatorCheck()) {
@@ -52,8 +52,9 @@ void clockCheckHardware()
 
     if (wire_error != 0) {
         Serial.println("AT24C32_ADDR EEPROM not found");
-        return;
     }
+
+    return 0;
 }
 
 void clockSetAlarms()

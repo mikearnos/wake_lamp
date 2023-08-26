@@ -29,7 +29,7 @@ void outletLoop()
     }
 }
 
-void outletHardwareSetup()
+int outletInitHW()
 {
     pcfIsrTriggered = 0;
 
@@ -49,7 +49,7 @@ void outletHardwareSetup()
 
     if (error != 0) {
         Serial.println("PCF8574 IO expander not found");
-        return;
+        return 1;
     }
 
     // set esp8266 pin interupt
@@ -61,6 +61,8 @@ void outletHardwareSetup()
         delay(200);
         outletOff(i);
     }
+
+    return 0;
 }
 
 void outletGetStatus(uint8_t* webData)
