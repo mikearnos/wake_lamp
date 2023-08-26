@@ -6,21 +6,20 @@ U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0);
   the previous versions of u8g2. Undef U8G2_BALANCED_STR_WIDTH_CALCULATION
   in u8g2.h to restore the old behaviour.*/
 
-int vPos = 15;
-
 void oledSetup(void)
 {
     u8g2.begin();
     u8g2.setFont(u8g2_font_ncenB24_tr);
 }
 
-void oledPrint(char* string)
+void oledBootPrint(const char* string)
 {
-    u8g2.setFont(u8g2_font_ncenB14_tr);
+    static int vPos;
+    vPos += 15;
+    u8g2.setFont(u8g2_font_ncenB10_tr);
     u8g2.setCursor(0, vPos);
     u8g2.print(string);
     u8g2.sendBuffer();
-    vPos += 15;
 }
 
 void oledGo(int sensorValue, bool systemEnabled)
@@ -59,6 +58,18 @@ void oledGo(int sensorValue, bool systemEnabled)
         horizontalValue = constrain(horizontalValue, 0, 255);
         horizontalValue = map(horizontalValue, 0, 255, 0, 127 - u8g2.getStrWidth("PM"));
         u8g2.drawStr(horizontalValue, 63, "PM"); // 23 pixels wide
+    }
+
+    if (!systemEnabled) {
+        uint8_t* test = u8g2.getBufferPtr();
+        for (int i = 128 * 2; i; i--) {
+            for (int j = 2; j; j--) {
+                *test++ &= 0xCC;
+            }
+            for (int j = 2; j; j--) {
+                *test++ &= 0x33;
+            }
+        }
     }
 
     u8g2.sendBuffer();
