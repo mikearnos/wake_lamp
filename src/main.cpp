@@ -6,6 +6,7 @@
 #include "time_ntp.h"
 #include "outlet_control.h"
 #include "analog.h"
+#include "oled.h"
 
 #include "..\..\..\wifi.h"
 const char* ssid = STASSID;
@@ -15,33 +16,32 @@ bool systemEnabled = 1;
 
 extern bool clockUpdateTime;
 
-extern void soundInitHW(void);
+extern int soundInitHW(void);
 extern uint16_t soundPlay(int);
-
-extern void oledSetup();
-extern void oledGo(int, bool);
-extern void oledPrint(char*);
 
 void setup()
 {
-    int errorHardware;
+    int errorHW = 0;
     Serial.begin(115200);
 
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH); // OFF
 
     oledSetup();
-    oledPrint("booting...\n");
-    oledPrint("more\n");
+    oledBootPrint("booting...");
 
-    soundInitHW();
+    errorHW += soundInitHW();
     soundPlay(1); // play first mp3 as startup sound
 
-    outletInitHW(); // calls Wire.begin(), check for and setup i2c expander
-    
-    clockInitHW(); // check for clock hardware
+    errorHW += outletInitHW(); // calls Wire.begin(), check for and setup i2c expander
 
-    clockNTPUpdate(0); // update DS3231 if power was lost
+    errorHW += clockInitHW(); // check for clock hardware
+
+    if (errorHW){
+        while(1);
+    }
+
+    //clockNTPUpdate(0); // update DS3231 if power was lost
 
     Serial.printf("First run at %s\n", clockGetTimeDateString(0));
     //oledGo(clockGetTimeDateString(0));
