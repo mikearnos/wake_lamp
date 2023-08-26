@@ -15,28 +15,33 @@ bool systemEnabled = 1;
 
 extern bool clockUpdateTime;
 
-extern void dfSetup(void);
-extern uint16_t dfPlay(int);
+extern void soundInitHW(void);
+extern uint16_t soundPlay(int);
 
 extern void oledSetup();
 extern void oledGo(int, bool);
+extern void oledPrint(char*);
 
 void setup()
 {
+    int errorHardware;
     Serial.begin(115200);
 
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH); // OFF
 
-    dfSetup();
-    dfPlay(1); // play first mp3 as startup sound
+    oledSetup();
+    oledPrint("booting...\n");
+    oledPrint("more\n");
 
-    outletHardwareSetup(); // calls Wire.begin(), check for and setup i2c expander
-    clockCheckHardware(); // check for clock hardware
+    soundInitHW();
+    soundPlay(1); // play first mp3 as startup sound
+
+    outletInitHW(); // calls Wire.begin(), check for and setup i2c expander
+    
+    clockInitHW(); // check for clock hardware
 
     clockNTPUpdate(0); // update DS3231 if power was lost
-
-    oledSetup();
 
     Serial.printf("First run at %s\n", clockGetTimeDateString(0));
     //oledGo(clockGetTimeDateString(0));
