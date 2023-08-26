@@ -11,17 +11,14 @@ DFRobot_DF1201S DF1201S;
 
 int totalFiles;
 
-void dfSetup(void)
+void soundInitHW(void)
 {
-    DF1201SSerial.begin(9600);
+    DF1201SSerial.begin(115200);
 
     for (int i = 5; !DF1201S.begin(DF1201SSerial) && i; i--) {
         if (i == 1) {
             Serial.println("DF1201S init failed, please check the wire connection!");
             for (int i = 0; i < 3; i++) {
-                //purpleFlash(255);
-                delay(200);
-                //purpleFlash(0);
                 delay(200);
             }
             return;
@@ -30,7 +27,7 @@ void dfSetup(void)
 
     // need to power cycle module after these are changed
     //DF1201S.setBaudRate(9600);
-    //DF1201A.setLED(off)
+    //DF1201S.setLED(false);
     //DF1201S.setPrompt(false);
 
     DF1201S.setVol(25);
@@ -48,7 +45,7 @@ void dfSetup(void)
     Serial.println(totalFiles);
 }
 
-uint16_t dfPlay(int fileID)
+uint16_t soundPlay(int fileID)
 {
     DF1201S.playFileNum(fileID);
     uint16_t totalTime = DF1201S.getTotalTime();
