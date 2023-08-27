@@ -5,6 +5,8 @@
 
 #define PCF8574_INT_PIN D5 // wemos D1 mini pin
 
+#define TOP_BUTTON INPUT_START
+
 void outletLoop(void);
 int outletInitHW(void);
 void outletGetStatus(uint8_t*);

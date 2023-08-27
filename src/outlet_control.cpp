@@ -24,9 +24,9 @@ void outletLoop()
 
         if (millis() - debounceDelay > 10) {
             debounceDelay = millis();
-            uint8_t input = relayBoard.digitalRead(INPUT_START, 0);
+            uint8_t input = relayBoard.digitalRead(TOP_BUTTON, 0);
             if (!input) {
-                Serial.printf("input pressed %d\n", count++);
+                Serial.printf("Button pressed %d times\n", count++);
                 systemEnabled ^= 1;
             }
         }
