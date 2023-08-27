@@ -12,7 +12,7 @@
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
-bool systemEnabled = 1;
+bool systemEnabled = 0;
 
 extern bool clockUpdateTime;
 
@@ -28,7 +28,7 @@ void setup()
     digitalWrite(LED_BUILTIN, HIGH); // OFF
 
     oledSetup();
-    oledBootPrint("booting...");
+    //oledBootPrint("booting...");
 
     errorHW += soundInitHW();
     soundPlay(1); // play first mp3 as startup sound
@@ -41,7 +41,7 @@ void setup()
         while(1);
     }
 
-    //clockNTPUpdate(0); // update DS3231 if power was lost
+    clockNTPUpdate(0); // update DS3231 if power was lost
 
     Serial.printf("First run at %s\n", clockGetTimeDateString(0));
     //oledGo(clockGetTimeDateString(0));
@@ -71,7 +71,6 @@ void handleEventMinutes(void)
 {
     time_t localTime = clockGetLocalTime();
     Serial.printf("Alarm 2 went off at %s\n", clockGetTimeDateString(localTime));
-    //oledGo(clockGetTimeDateString(0));
 
     if (clockUpdateTime) {
         clockNTPUpdate(1); // force an NTP update
