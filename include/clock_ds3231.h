@@ -18,6 +18,8 @@
 #define NTP_DELAY_MINS 120
 #define NTP_DELAY_HOURS ( NTP_DELAY_MINS / 60 )
 
+extern bool clockUpdateTime;
+
 void ds3231_interrupt(void);
 void clockLoop(void);
 
