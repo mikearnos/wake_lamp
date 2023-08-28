@@ -1,3 +1,4 @@
+#include "oled.h"
 #include <U8g2lib.h>
 #include "analog.h"
 
@@ -9,16 +10,29 @@ U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0);
 void oledSetup(void)
 {
     u8g2.begin();
-    //u8g2.setFont(u8g2_font_ncenB24_tr);
     u8g2.setFont(u8g2_font_ncenB10_tr);
     u8g2.setCursor(0, 15);
     u8g2.print("Booting...");
     u8g2.sendBuffer();
 }
 
+void oledLoop(void)
+{
+    static uint32_t oledRefresh = millis();
+    if (millis() - oledRefresh > 10) {
+        oledRefresh = millis();
+
+        //int sensorValue = bufferADC(8); // this routine lags a bit
+        int sensorValue = movingWindowADC(4);
+        sensorValue = constrain(sensorValue, DEADZONE_LOW, DEADZONE_HIGH); // trim the dead zone
+
+        oledDrawTimeSet(sensorValue, mode);
+    }
+}
+
 void oledBootPrint(const char* string)
 {
-    static int vPos = 0;
+    static int vPos;
     if (vPos == 0) {
         u8g2.clearBuffer();
     }
@@ -30,7 +44,7 @@ void oledBootPrint(const char* string)
     u8g2.sendBuffer();
 }
 
-void oledGo(int sensorValue, bool systemEnabled)
+void oledDrawTimeSet(int sensorValue, int mode)
 {
     char bufferStr[6]; //the ASCII of the time will be stored in this char array "12:00\n"
     const char* hourStrings[] = { "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
@@ -68,7 +82,7 @@ void oledGo(int sensorValue, bool systemEnabled)
         u8g2.drawStr(horizontalValue, 63, "PM"); // 23 pixels wide
     }
 
-    if (!systemEnabled) {
+    if (mode == 0) {
         uint8_t* test = u8g2.getBufferPtr();
         for (int i = 128 * 2; i; i--) {
             for (int j = 2; j; j--) {
