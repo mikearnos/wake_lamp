@@ -12,10 +12,6 @@
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
-int mode = 0;
-
-extern bool clockUpdateTime;
-
 extern int soundInitHW(void);
 extern uint16_t soundPlay(int);
 
