@@ -2,6 +2,8 @@
 #include <U8g2lib.h>
 #include "analog.h"
 
+int mode = 0;
+
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0);
 /*Note: In v2.29 the returned value might be (a little bit) larger than in
   the previous versions of u8g2. Undef U8G2_BALANCED_STR_WIDTH_CALCULATION
