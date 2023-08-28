@@ -7,8 +7,6 @@ uint8_t outletStatus[OUTLET_NUM] = { 0 };
 
 volatile bool pcfIsrTriggered = 0;
 
-extern bool systemEnabled;
-
 IRAM_ATTR void pcf8574_interrupt()
 {
     pcfIsrTriggered = 1;
@@ -21,13 +19,14 @@ void outletLoop()
 
     if (pcfIsrTriggered) {
         pcfIsrTriggered = 0;
+        uint8_t input = relayBoard.digitalRead(TOP_BUTTON, 0);
 
-        if (millis() - debounceDelay > 10) {
+        if (millis() - debounceDelay > 50) {
             debounceDelay = millis();
-            uint8_t input = relayBoard.digitalRead(TOP_BUTTON, 0);
             if (!input) {
-                Serial.printf("Button pressed %d times\n", count++);
-                systemEnabled ^= 1;
+                Serial.printf("Button pressed %d times\tMode = %d\n", count++, mode);
+                if (++mode > 2)
+                    mode = 0;
             }
         }
     }
