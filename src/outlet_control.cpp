@@ -14,7 +14,6 @@ IRAM_ATTR void pcf8574_interrupt()
 
 void outletLoop()
 {
-    static int count = 0;
     static uint32_t debounceDelay;
 
     if (pcfIsrTriggered) {
@@ -24,9 +23,9 @@ void outletLoop()
         if (millis() - debounceDelay > 50) {
             debounceDelay = millis();
             if (!input) {
-                Serial.printf("Button pressed %d times\tMode = %d\n", count++, mode);
-                if (++mode > 2)
+                if (++mode >= MODES)
                     mode = 0;
+                Serial.printf("Mode = %d\n", mode);
             }
         }
     }
