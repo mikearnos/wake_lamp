@@ -12,7 +12,7 @@
 const char* ssid = STASSID;
 const char* password = STAPSK;
 
-bool systemEnabled = 0;
+int mode = 0;
 
 extern bool clockUpdateTime;
 
@@ -28,7 +28,6 @@ void setup()
     digitalWrite(LED_BUILTIN, HIGH); // OFF
 
     oledSetup();
-    //oledBootPrint("booting...");
 
     errorHW += soundInitHW();
     soundPlay(1); // play first mp3 as startup sound
@@ -37,34 +36,25 @@ void setup()
 
     errorHW += clockInitHW(); // check for clock hardware
 
-    if (errorHW){
-        while(1);
+    if (errorHW) {
+        while (1)
+            ;
     }
 
     clockNTPUpdate(0); // update DS3231 if power was lost
 
     Serial.printf("First run at %s\n", clockGetTimeDateString(0));
-    //oledGo(clockGetTimeDateString(0));
 
     clockSetAlarms(); // enable alarms after we have the correct time
 }
 
 void loop()
 {
-    static uint32_t oledRefresh = millis();
-    if (millis() - oledRefresh > 10) {
-        oledRefresh = millis();
-
-        //int sensorValue = bufferADC(8); // this routine lags a bit
-        int sensorValue = movingWindowADC(4);
-        sensorValue = constrain(sensorValue, DEADZONE_LOW, DEADZONE_HIGH); // trim the dead zone
-
-        oledGo(sensorValue, systemEnabled);
-    }
-
     outletLoop(); // check for input interrupt
 
     clockLoop(); // launch events once a minute and once a month
+
+    oledLoop(); // update the OLED display
 }
 
 void handleEventMinutes(void)
