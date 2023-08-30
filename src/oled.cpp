@@ -38,6 +38,21 @@ void oledLoop(void)
             u8g2.drawButtonUTF8(62, 30, U8G2_BTN_HCENTER | U8G2_BTN_BW2, 0, 3, 3, clockTimeString);
         }
 
+        static bool flipFlop;
+        flipFlop ^= 1;
+        const uint8_t mesh[] = { 0xCC, 0x33, 0x33, 0xCC };
+        if (mode == 2) {
+            uint8_t* test = u8g2.getBufferPtr();
+            for (int i = 128 * 2; i; i--) {
+                for (int j = 2; j; j--) {
+                    *test++ &= mesh[0 + (flipFlop * 2)];
+                }
+                for (int j = 2; j; j--) {
+                    *test++ &= mesh[1 + (flipFlop * 2)];
+                }
+            }
+        }
+
         u8g2.sendBuffer();
     }
 }
@@ -92,18 +107,6 @@ void oledDrawTimeSet(int sensorValue)
         horizontalValue = constrain(horizontalValue, 0, 255);
         horizontalValue = map(horizontalValue, 0, 255, 0, 127 - u8g2.getStrWidth("PM"));
         u8g2.drawStr(horizontalValue, 63, "PM"); // 23 pixels wide
-    }
-
-    if (mode == 0) {
-        uint8_t* test = u8g2.getBufferPtr();
-        for (int i = 128 * 2; i; i--) {
-            for (int j = 2; j; j--) {
-                *test++ &= 0xCC;
-            }
-            for (int j = 2; j; j--) {
-                *test++ &= 0x33;
-            }
-        }
     }
 
     //u8g2.sendBuffer();
