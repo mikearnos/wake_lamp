@@ -35,7 +35,7 @@ void oledLoop(void)
             oledDrawTimeSet(sensorValue);
         } else {
             u8g2.setFont(u8g2_font_ncenB14_tr);
-            //u8g2.drawButtonUTF8(62, 30, U8G2_BTN_HCENTER | U8G2_BTN_BW2, 0, 3, 3, clockTimeString);
+            u8g2.drawButtonUTF8(62, 30, U8G2_BTN_HCENTER | U8G2_BTN_BW2, 0, 3, 3, clockTimeString);
         }
 
         u8g2.sendBuffer();
