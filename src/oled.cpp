@@ -1,6 +1,7 @@
 #include "oled.h"
 #include <U8g2lib.h>
 #include "analog.h"
+#include "clock_ds3231.h"
 
 int mode = 0;
 
@@ -24,11 +25,20 @@ void oledLoop(void)
     if (millis() - oledRefresh > 10) {
         oledRefresh = millis();
 
-        //int sensorValue = bufferADC(8); // this routine lags a bit
-        int sensorValue = movingWindowADC(4);
-        sensorValue = constrain(sensorValue, DEADZONE_LOW, DEADZONE_HIGH); // trim the dead zone
+        u8g2.clearBuffer();
 
-        oledDrawTimeSet(sensorValue, mode);
+        if (mode < 2) {
+            //int sensorValue = bufferADC(8); // this routine lags a bit
+            int sensorValue = movingWindowADC(4);
+            sensorValue = constrain(sensorValue, DEADZONE_LOW, DEADZONE_HIGH); // trim the dead zone
+
+            oledDrawTimeSet(sensorValue);
+        } else {
+            u8g2.setFont(u8g2_font_ncenB14_tr);
+            //u8g2.drawButtonUTF8(62, 30, U8G2_BTN_HCENTER | U8G2_BTN_BW2, 0, 3, 3, clockTimeString);
+        }
+
+        u8g2.sendBuffer();
     }
 }
 
@@ -46,7 +56,7 @@ void oledBootPrint(const char* string)
     u8g2.sendBuffer();
 }
 
-void oledDrawTimeSet(int sensorValue, int mode)
+void oledDrawTimeSet(int sensorValue)
 {
     char bufferStr[6]; //the ASCII of the time will be stored in this char array "12:00\n"
     const char* hourStrings[] = { "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
@@ -59,7 +69,7 @@ void oledDrawTimeSet(int sensorValue, int mode)
     strcat(bufferStr, ":");
     strcat(bufferStr, minStrings[halfHours % 2]);
 
-    u8g2.clearBuffer();
+    //u8g2.clearBuffer();
 
     // draw the time with a box around it
     u8g2.setFont(u8g2_font_ncenB24_tr);
@@ -96,6 +106,6 @@ void oledDrawTimeSet(int sensorValue, int mode)
         }
     }
 
-    u8g2.sendBuffer();
+    //u8g2.sendBuffer();
     //Serial.printf("%d %d\n", u8g2.getStrWidth("AM"), u8g2.getStrWidth("PM"));
 }
