@@ -41,9 +41,7 @@ void setup()
     clockNTPUpdate(0); // update DS3231 if power was lost
 
     clockGetTimeDateString(0);
-
     Serial.printf("First run at %s\n", clockTimeDateString);
-    //clockTimeString = clockGetTimeString(0);
 
     clockSetAlarms(); // enable alarms after we have the correct time
 }
@@ -59,11 +57,9 @@ void loop()
 
 void handleEventMinutes(void)
 {
-    time_t localTime = clockGetLocalTime();
-    clockGetTimeDateString(localTime);
+    clockGetTimeDateString(0);
     Serial.printf("Alarm 2 went off at %s\n", clockTimeDateString);
 
-    Serial.printf("clockTimeString = %s", clockTimeString);
     if (clockUpdateTime) {
         clockNTPUpdate(1); // force an NTP update
     }
