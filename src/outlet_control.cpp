@@ -18,10 +18,10 @@ void outletLoop()
 
     if (pcfIsrTriggered) {
         pcfIsrTriggered = 0;
-        uint8_t input = relayBoard.digitalRead(TOP_BUTTON, 0);
 
-        if (millis() - debounceDelay > 50) {
+        if (millis() - debounceDelay > 80) {
             debounceDelay = millis();
+            uint8_t input = relayBoard.digitalRead(TOP_BUTTON, 0);
             if (!input) {
                 if (++mode >= MODES)
                     mode = 0;
