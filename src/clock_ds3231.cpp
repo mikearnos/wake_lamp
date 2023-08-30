@@ -82,7 +82,7 @@ void clockLoop()
 
     isrTriggered = 0;
 
-    clockGetTimeDateString(0);
+    clockGetTimeDateString(0); // read DS3231 and create strings containing time
 
     if (ds_clock.checkIfAlarm(1)) { // *months*, clear alarm flag in the DS3231
         Serial.printf("Alarm 1 went off at %s\n", clockTimeDateString);
@@ -168,7 +168,7 @@ void clockGetTimeDateString(time_t UNIXTime)
     int meridiem = 0;
 
     if (!UNIXTime) {
-        UNIXTime = clockGetLocalTime();
+        UNIXTime = clockGetLocalTime(); // reads from the DS3231
     }
 
     struct tm tmnow;
@@ -178,12 +178,15 @@ void clockGetTimeDateString(time_t UNIXTime)
         tmnow.tm_year - 100, tmnow.tm_hour, tmnow.tm_min, tmnow.tm_sec);
 
     int hour = tmnow.tm_hour;
-    if (hour > 12) {
-        hour -= 12;
-    }
+
     if (hour > 11) {
         meridiem = 1;
     }
+    if (hour > 12) {
+        hour -= 12;
+    }
+    if (hour == 0) // midnight
+        hour = 12;
 
     sprintf(timeBuffer, "%d:%02d %s", hour, tmnow.tm_min, meridiemString[meridiem]);
 
