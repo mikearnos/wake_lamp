@@ -28,8 +28,8 @@ void clockSetAlarms(void);
 void clockHandleEventMinutes(void);
 void clockNTPUpdate(int16_t);
 void clockSetEpoch(time_t);
-char* clockGetTimeDateString(time_t);
-char* clockGetTimeString(time_t);
+void clockGetTimeDateString(time_t);
 time_t clockGetLocalTime(void);
 
+extern char* clockTimeDateString;
 extern char* clockTimeString;

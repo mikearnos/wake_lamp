@@ -14,6 +14,9 @@ extern void disconnectWifi(void); // in main.cpp
 DS3231 ds_clock;
 RTClib myRTC; // get now()
 
+char* clockTimeDateString;
+char* clockTimeString;
+
 uint8_t ds_error = 0;
 int16_t clockDelayUpdate = 0; // prevents multiple NTP requests in a short time
 bool clockUpdateTime = 0;
@@ -79,8 +82,10 @@ void clockLoop()
 
     isrTriggered = 0;
 
+    clockGetTimeDateString(0);
+
     if (ds_clock.checkIfAlarm(1)) { // *months*, clear alarm flag in the DS3231
-        Serial.printf("Alarm 1 went off at %s\n", clockGetTimeDateString(0));
+        Serial.printf("Alarm 1 went off at %s\n", clockTimeDateString);
         clockUpdateTime = 1;
     }
     if (ds_clock.checkIfAlarm(2)) { // *minutes*, clear alarm flag in the DS3231
@@ -126,7 +131,8 @@ void clockNTPUpdate(int16_t force)
 
     if (loop) { // if UDP didn't timeout
         clockSetEpoch(time); // also resets the Oscillator Stop Flag
-        Serial.printf("Time updated: %s\n", clockGetTimeDateString(0));
+        clockGetTimeDateString(0);
+        Serial.printf("Time updated: %s\n", clockTimeDateString);
 
         ds_error &= ~DS3231_LOST_POWER; // clear the flag
         clockDelayUpdate = NTP_DELAY_MINS; // delay next NTP update
@@ -153,9 +159,13 @@ void clockSetEpoch(time_t epoch)
     ds_clock.setYear(tmnow.tm_year - 100); /* year */
 }
 
-char* clockGetTimeDateString(time_t UNIXTime)
+void clockGetTimeDateString(time_t UNIXTime)
 {
-    static char buffer[25];
+    static char timeDateBuffer[25];
+    static char timeBuffer[25];
+
+    const char* meridiemString[] = { "AM", "PM" };
+    int meridiem = 0;
 
     if (!UNIXTime) {
         UNIXTime = clockGetLocalTime();
@@ -164,10 +174,21 @@ char* clockGetTimeDateString(time_t UNIXTime)
     struct tm tmnow;
     gmtime_r(&UNIXTime, &tmnow);
 
-    sprintf(buffer, "%d/%d/%d %d:%02d:%02d", tmnow.tm_mon + 1, tmnow.tm_mday,
+    sprintf(timeDateBuffer, "%d/%d/%d %d:%02d:%02d", tmnow.tm_mon + 1, tmnow.tm_mday,
         tmnow.tm_year - 100, tmnow.tm_hour, tmnow.tm_min, tmnow.tm_sec);
 
-    return buffer;
+    int hour = tmnow.tm_hour;
+    if (hour > 12) {
+        hour -= 12;
+    }
+    if (hour > 11) {
+        meridiem = 1;
+    }
+
+    sprintf(timeBuffer, "%d:%02d %s", hour, tmnow.tm_min, meridiemString[meridiem]);
+
+    clockTimeDateString = timeDateBuffer;
+    clockTimeString = timeBuffer;
 }
 
 time_t clockGetLocalTime()

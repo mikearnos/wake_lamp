@@ -25,8 +25,8 @@ void setup()
 
     oledSetup();
 
-    errorHW += soundInitHW();
-    soundPlay(1); // play first mp3 as startup sound
+    //errorHW += soundInitHW();
+    //soundPlay(1); // play first mp3 as startup sound
 
     errorHW += outletInitHW(); // calls Wire.begin(), check for and setup i2c expander
 
@@ -37,9 +37,13 @@ void setup()
             ;
     }
 
+    oledBootPrint("NTP update...");
     clockNTPUpdate(0); // update DS3231 if power was lost
 
-    Serial.printf("First run at %s\n", clockGetTimeDateString(0));
+    clockGetTimeDateString(0);
+
+    Serial.printf("First run at %s\n", clockTimeDateString);
+    //clockTimeString = clockGetTimeString(0);
 
     clockSetAlarms(); // enable alarms after we have the correct time
 }
@@ -56,8 +60,10 @@ void loop()
 void handleEventMinutes(void)
 {
     time_t localTime = clockGetLocalTime();
-    Serial.printf("Alarm 2 went off at %s\n", clockGetTimeDateString(localTime));
+    clockGetTimeDateString(localTime);
+    Serial.printf("Alarm 2 went off at %s\n", clockTimeDateString);
 
+    Serial.printf("clockTimeString = %s", clockTimeString);
     if (clockUpdateTime) {
         clockNTPUpdate(1); // force an NTP update
     }
