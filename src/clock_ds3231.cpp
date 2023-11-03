@@ -116,6 +116,7 @@ void clockNTPUpdate(int16_t force)
         Serial.println("ERROR: DS3231 Lost Power");
     }
 
+    oledBootPrint("NTP update...");
     Serial.println("Updating time via NTP.");
     connectWifi();
     startUDP();

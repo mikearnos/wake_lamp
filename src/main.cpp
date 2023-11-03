@@ -37,7 +37,6 @@ void setup()
             ;
     }
 
-    oledBootPrint("NTP update...");
     clockNTPUpdate(0); // update DS3231 if power was lost
 
     clockGetTimeDateString(0);
