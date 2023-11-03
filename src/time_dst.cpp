@@ -60,13 +60,17 @@ int isDST(time_t UNIXTime)
 
     if (tmnow.tm_mon == myMonthBegin) { // if March
         int DSTbegin = NthDate(tmnow.tm_year, myMonthBegin, myDOW, myNthWeekBegin);
-        if (tmnow.tm_mday >= DSTbegin && tmnow.tm_hour >= 2)
+        if (tmnow.tm_mday > DSTbegin)
+            return 1;
+        if (tmnow.tm_mday == DSTbegin && tmnow.tm_hour >= 2)
             return 1;
     }
 
     if (tmnow.tm_mon == myMonthEnd) { // if November
         int DSTend = NthDate(tmnow.tm_year, myMonthEnd, myDOW, myNthWeekEnd);
-        if (tmnow.tm_mday <= DSTend && tmnow.tm_hour < 2)
+        if (tmnow.tm_mday < DSTend)
+            return 1;
+        if (tmnow.tm_mday == DSTend && tmnow.tm_hour < 2)
             return 1;
     }
 
