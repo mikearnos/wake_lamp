@@ -1,5 +1,5 @@
-#include "oled.h"
 #include <U8g2lib.h>
+#include "oled.h"
 #include "analog.h"
 #include "clock_ds3231.h"
 
@@ -22,6 +22,7 @@ void oledSetup(void)
 void oledLoop(void)
 {
     static uint32_t oledRefresh = millis();
+
     if (millis() - oledRefresh > 10) {
         oledRefresh = millis();
 
@@ -38,22 +39,47 @@ void oledLoop(void)
             u8g2.drawButtonUTF8(62, 30, U8G2_BTN_HCENTER | U8G2_BTN_BW2, 0, 3, 3, clockTimeString);
         }
 
-        static bool flipFlop;
-        flipFlop ^= 1;
-        const uint8_t mesh[] = { 0xCC, 0x33, 0x33, 0xCC };
-        if (mode == 2) {
-            uint8_t* test = u8g2.getBufferPtr();
-            for (int i = 128 * 2; i; i--) {
-                for (int j = 2; j; j--) {
-                    *test++ &= mesh[0 + (flipFlop * 2)];
-                }
-                for (int j = 2; j; j--) {
-                    *test++ &= mesh[1 + (flipFlop * 2)];
-                }
-            }
+        if (mode < 2) {
+            checkerPattern(u8g2.getBufferPtr(), 1);
         }
 
         u8g2.sendBuffer();
+    }
+}
+
+void checkerPattern(uint8_t* buffer, uint8_t pixelSize)
+{
+    static bool flipFlop;
+
+    if (millis() % 2000 >= 1000) { // toggle once a second
+        flipFlop = 1;
+    } else {
+        flipFlop = 0;
+    }
+
+    if (pixelSize == 1) { // 1x1 checker pattern
+        const uint8_t mesh[] = {
+            0xAA, 0x55, // drawn when flipFlop == 0
+            0x55, 0xAA // drawn when flipFlop == 1
+        };
+        for (int i = 128 * (4 / pixelSize); i; i--) {
+            *buffer++ &= mesh[0 + (flipFlop * 2)];
+            *buffer++ &= mesh[1 + (flipFlop * 2)];
+        }
+    }
+    if (pixelSize == 2) { // 2x2 checker pattern
+        const uint8_t mesh[] = {
+            0xCC, 0x33, // drawn twice when flipFlop == 0
+            0x33, 0xCC // drawn twice when flipFlop == 1
+        };
+        for (int i = 128 * (4 / pixelSize); i; i--) {
+            for (int j = 2; j; j--) {
+                *buffer++ &= mesh[0 + (flipFlop * 2)];
+            }
+            for (int j = 2; j; j--) {
+                *buffer++ &= mesh[1 + (flipFlop * 2)];
+            }
+        }
     }
 }
 
