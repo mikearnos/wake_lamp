@@ -199,7 +199,7 @@ time_t clockGetLocalTime()
     DateTime now = myRTC.now();
     time_t UNIXTime = now.unixtime();
 
-    UNIXTime += TZ_OFFSET;
+    UNIXTime += TZ_OFFSET * 3600;
 
     if (isDST(UNIXTime)) {
         UNIXTime += 3600; // add 1 hour for DST
