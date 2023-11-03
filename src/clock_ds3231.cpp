@@ -67,6 +67,9 @@ int clockInitHW()
 
 void clockSetAlarms()
 {
+    // alarms seem to not work sometimes after losing power but with a battery installed without this
+    ds_clock.turnOffAlarm(1);
+    ds_clock.turnOffAlarm(2);
     // set DS3231 alarm to trigger every minute
     ds_clock.setA1Time(ALARM1_DATE, ALARM1_HOUR, ALARM1_MINUTE, 0, ALARM1_BITS, 0, 0, 0);
     ds_clock.setA2Time(0, 0, 0, ALARM2_BITS, 0, 0, 0);
