@@ -3,7 +3,7 @@
 #include "analog.h"
 #include "clock_ds3231.h"
 
-int mode = 0;
+int mode = 2;
 
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0);
 /*Note: In v2.29 the returned value might be (a little bit) larger than in
@@ -35,6 +35,15 @@ void oledLoop(void)
 
             oledDrawTimeSet(sensorValue);
         } else {
+            clockGetTimeDateString(0);
+            if (millis() % 2000 >= 1000) { // toggle once a second
+                for (int i = 0; clockTimeString[i] != '\0'; i++) {
+                    if (clockTimeString[i] == ':') {
+                        clockTimeString[i] = ' ';
+                    } else
+                        continue;
+                }
+            }
             u8g2.setFont(u8g2_font_ncenB14_tr);
             u8g2.drawButtonUTF8(62, 30, U8G2_BTN_HCENTER | U8G2_BTN_BW2, 0, 3, 3, clockTimeString);
         }
