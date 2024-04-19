@@ -30,7 +30,7 @@ void oledLoop(void)
 
         if (mode < 2) {
             //int sensorValue = bufferADC(8); // this routine lags a bit
-            int sensorValue = movingWindowADC(4);
+            int sensorValue = movingWindowADC(3);
             sensorValue = constrain(sensorValue, DEADZONE_LOW, DEADZONE_HIGH); // trim the dead zone
 
             oledDrawTimeSet(sensorValue);

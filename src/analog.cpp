@@ -30,11 +30,11 @@ int movingWindowADC(int deviation)
     static int stableRead;
 
     int newRead = analogRead(ANALOG_IN_PIN);
-    if (newRead >= stableRead + deviation || newRead <= stableRead - deviation) {
+    if (newRead > stableRead + deviation || newRead < stableRead - deviation) {
         stableRead = newRead;
     }
 
-    //Serial.printf("movingWindow: %d\n", stableRead);
+    Serial.printf("raw: %d    movingWindow: %d\n", newRead, stableRead);
 
     return stableRead;
 }
