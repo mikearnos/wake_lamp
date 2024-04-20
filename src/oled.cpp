@@ -3,6 +3,8 @@
 #include "analog.h"
 #include "clock_ds3231.h"
 
+#define BOOT_TEXT_FONT u8g2_font_ncenB10_tr
+
 int mode = 2;
 
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0);
@@ -13,7 +15,7 @@ U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0);
 void oledSetup(void)
 {
     u8g2.begin();
-    u8g2.setFont(u8g2_font_ncenB10_tr);
+    u8g2.setFont(BOOT_TEXT_FONT);
     u8g2.setCursor(0, 15);
     u8g2.print("Booting...");
     u8g2.sendBuffer();
@@ -100,7 +102,7 @@ void oledBootPrint(const char* string)
     }
 
     vPos += 15;
-    //u8g2.setFont(u8g2_font_ncenB10_tr);
+    //u8g2.setFont(BOOT_TEXT_FONT);
     u8g2.setCursor(0, vPos);
     u8g2.print(string);
     u8g2.sendBuffer();
@@ -131,7 +133,7 @@ void oledDrawTimeSet(int sensorValue)
         u8g2.drawButtonUTF8(62, 30, U8G2_BTN_SHADOW1 | U8G2_BTN_INV | U8G2_BTN_HCENTER | U8G2_BTN_BW2, 34, 2, 2, bufferStr);
     }
 
-    u8g2.setFont(u8g2_font_ncenB10_tr);
+    u8g2.setFont(BOOT_TEXT_FONT);
 
     if (horizontalValue < 256) {
         horizontalValue = constrain(horizontalValue, 0, 255);
