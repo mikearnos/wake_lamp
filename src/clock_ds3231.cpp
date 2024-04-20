@@ -144,6 +144,9 @@ void clockNTPUpdate(int16_t force)
         ds_error &= ~DS3231_LOST_POWER; // clear the flag
         clockDelayUpdate = NTP_DELAY_MINS; // delay next NTP update
         clockUpdateTime = 0;
+
+        oledBootPrint("Time updated!");
+        delay(1000);
     } else {
         Serial.println("ERROR: Couldn't get time from NTP server, will retry.");
         clockUpdateTime = 1;

@@ -97,14 +97,27 @@ void checkerPattern(uint8_t* buffer, uint8_t pixelSize)
 void oledBootPrint(const char* string)
 {
     static int vPos;
-    if (vPos == 0) {
-        u8g2.clearBuffer();
+
+    if (strlen(string) > 0) {
+        if (vPos == 0) {
+            u8g2.clearBuffer();
+        }
+        vPos += 15;
+
+        u8g2.setFont(BOOT_TEXT_FONT);
+        u8g2.setCursor(0, vPos);
+        u8g2.print(string);
+    } else if (wifiIcon) {
+        u8g2.setFont(u8g2_font_streamline_interface_essential_wifi_t);
+        u8g2.drawStr(107, 21, "0"); // draw wifi icon
+    } else if (!wifiIcon) {
+        u8g2.setDrawColor(2); // XOR mode
+        u8g2.setFont(u8g2_font_streamline_interface_essential_wifi_t);
+        u8g2.drawStr(107, 21, "0"); // draw over wifi icon
+
+        u8g2.setDrawColor(1); // reset to default color
     }
 
-    vPos += 15;
-    //u8g2.setFont(BOOT_TEXT_FONT);
-    u8g2.setCursor(0, vPos);
-    u8g2.print(string);
     u8g2.sendBuffer();
 }
 

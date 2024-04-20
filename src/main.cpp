@@ -15,6 +15,8 @@ const char* password = STAPSK;
 extern int soundInitHW(void);
 extern uint16_t soundPlay(int);
 
+bool wifiIcon = 0;
+
 void setup()
 {
     int errorHW = 0;
@@ -72,9 +74,15 @@ void connectWifi(void)
 
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
+        wifiIcon ^= 1;
+        oledBootPrint(""); // update the oled to flash the wifi symbol
+
         Serial.print(".");
         delay(500);
     }
+    wifiIcon = 1;
+    oledBootPrint(""); // update the oled with the wifi symbol
+
     Serial.printf("\nConnected to %s", ssid);
     Serial.printf(" - IP address: %s\n", WiFi.localIP().toString().c_str());
 }
@@ -85,4 +93,7 @@ void disconnectWifi(void)
     WiFi.mode(WIFI_OFF);
     WiFi.forceSleepBegin();
     delay(1);
+
+    wifiIcon = 0;
+    oledBootPrint(""); // update the oled to erase the wifi symbol
 }
