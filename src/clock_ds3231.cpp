@@ -70,9 +70,12 @@ void clockSetAlarms()
     // alarms seem to not work sometimes after losing power but with a battery installed without this
     ds_clock.turnOffAlarm(1);
     ds_clock.turnOffAlarm(2);
-    // set DS3231 alarm to trigger every minute
+
+    // set DS3231 alarm 1 to trigger once a month
     ds_clock.setA1Time(ALARM1_DATE, ALARM1_HOUR, ALARM1_MINUTE, 0, ALARM1_BITS, 0, 0, 0);
+    // set DS3231 alarm 2 to trigger every minute
     ds_clock.setA2Time(0, 0, 0, ALARM2_BITS, 0, 0, 0);
+
     // enable alarm interrupts and alarm 2 interrupt
     ds_clock.turnOnAlarm(1);
     ds_clock.turnOnAlarm(2);
