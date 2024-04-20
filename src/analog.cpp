@@ -34,7 +34,7 @@ int movingWindowADC(int deviation)
         stableRead = newRead;
     }
 
-    Serial.printf("raw: %d    movingWindow: %d\n", newRead, stableRead);
+    //Serial.printf("raw: %d    movingWindow: %d\n", newRead, stableRead);
 
     return stableRead;
 }
